@@ -81,11 +81,17 @@ class Albino
     proc_options[:timeout] = options.delete(:timeout) || self.class.timeout_threshold
     command = convert_options(options)
     command.unshift(bin)
-    Child.new(*(command + [proc_options.merge(:input => write_target)]))
+    out = nil
+    IO.popen(command, 'w+') do |child|
+      child.write write_target
+      child.close_write
+      out = child.read
+    end
+    out
   end
 
   def colorize(options = {})
-    out = execute(options).out
+    out = execute(options)
 
     # markdown requires block elements on their own line
     out.sub!(%r{</pre></div>\Z}, "</pre>\n</div>")
