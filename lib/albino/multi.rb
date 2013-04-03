@@ -23,7 +23,6 @@ class Albino
   #
   # To see all lexers and formatters available, run `pygmentize -L`.
   class Multi
-    include POSIX::Spawn
 
     class << self
       attr_accessor :bin, :timeout_threshold
@@ -83,13 +82,17 @@ class Albino
         memo << code << SEPARATOR
       end.join("")
 
-      child  = Child.new(self.class.bin, options)
-      pieces = child.out.split(SEPARATOR).each do |code|
-        # markdown requires block elements on their own line
-        code.sub!(%r{</pre></div>\Z}, "</pre>\n</div>")
+      pieces = []
 
-        # albino::multi assumes utf8 encoding
-        code.force_encoding('UTF-8') if code.respond_to?(:force_encoding)
+      IO.popen(self.class.bin, 'w+') do |child|
+        child.write options[:input]
+        child.close_write
+        while code = child.gets(SEPARATOR)
+          code.chomp!(SEPARATOR)
+          code.sub!(%r{</pre></div>\Z}, "</pre>\n</div>")
+          code.force_encoding('UTF-8') if code.respond_to?(:force_encoding)
+          pieces << code
+        end
       end
       @multi ? pieces : pieces.first
     end

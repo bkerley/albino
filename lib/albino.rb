@@ -1,5 +1,3 @@
-require 'posix-spawn'
-
 ##
 # Wrapper for the Pygments command line tool, pygmentize.
 #
@@ -49,7 +47,6 @@ require 'posix-spawn'
 #
 class Albino
   class ShellArgumentError < ArgumentError; end
-  include POSIX::Spawn
 
   VERSION = '1.3.3'
 
