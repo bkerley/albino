@@ -82,16 +82,15 @@ class Albino
         memo << code << SEPARATOR
       end.join("")
 
-      pieces = []
+      pieces = nil
 
       IO.popen(self.class.bin, 'w+') do |child|
         child.write options[:input]
         child.close_write
-        while code = child.gets(SEPARATOR)
+        pieces = child.each_line(SEPARATOR).map do |code|
           code.chomp!(SEPARATOR)
           code.sub!(%r{</pre></div>\Z}, "</pre>\n</div>")
           code.force_encoding('UTF-8') if code.respond_to?(:force_encoding)
-          pieces << code
         end
       end
       @multi ? pieces : pieces.first
