@@ -1,10 +1,15 @@
 # Albino: a ruby wrapper for pygmentize
 
-This project is an extraction from GitHub.
+This project is a hack of an extraction from GitHub.
 
-For this and other extractions, see [http://github.com/github]()
+The issue I faced is that Ryan Tomayko's 
+[rocco](https://github.com/rtomayko/rocco) literate programming tool
+depends on this. That's cool, but albino used to depend on posix-spawn,
+which depends on a C library, which won't work in JRuby.
 
-**Note**: This library is deprecated in favor of [pygments.rb](https://github.com/tmm1/pygments.rb).
+This fork removes posix-spawn, instead using popen, which works just
+fine in JRuby on Mac OS X. As a casualty, the API for Albino#execute
+has changed, for which I am <s>deeply sorry</s> unapologetic.
 
 ## Installation
 
